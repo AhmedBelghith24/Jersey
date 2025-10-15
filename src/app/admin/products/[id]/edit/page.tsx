@@ -1,3 +1,4 @@
+// src/app/admin/products/[id]/edit/page.tsx
 import {
   fetchAdminProductDetails,
   updateProductAction,
@@ -11,17 +12,18 @@ import TextAreaInput from '@/components/form/TextAreaInput'
 import { SubmitButton } from '@/components/form/Buttons'
 import CheckboxInput from '@/components/form/CheckboxInput'
 import ImageInputContainer from '@/components/form/ImageInputContainer'
+import type { PageProps } from 'next'
 
-type EditProductPageProps = {
-  params: {
-    id: string
-  }
-}
+// Keep Node runtime if your data layer uses Prisma/Node APIs
+export const runtime = 'nodejs'
 
-export default async function EditProductPage({
-  params,
-}: EditProductPageProps) {
-  const product = await fetchAdminProductDetails(params.id)
+export default async function EditProductPage(
+  props: PageProps<'/admin/products/[id]/edit'>
+) {
+  // ✅ Next 15: params is a Promise — await it
+  const { id } = await props.params
+
+  const product = await fetchAdminProductDetails(id)
 
   if (!product) {
     return <div className="text-red-600">Product not found.</div>
@@ -41,7 +43,7 @@ export default async function EditProductPage({
           image={image}
           text="update image"
         >
-          <input type="hidden" name="id" value={params.id} />
+          <input type="hidden" name="id" value={id} />
           <input type="hidden" name="url" value={image} />
         </ImageInputContainer>
       </div>
@@ -50,7 +52,7 @@ export default async function EditProductPage({
       <div className="border p-8 rounded-md">
         <FormContainer action={updateProductAction}>
           <div className="grid gap-4 md:grid-cols-2 my-4">
-            <input type="hidden" name="id" value={params.id} />
+            <input type="hidden" name="id" value={id} />
             <FormInput
               type="text"
               name="name"
