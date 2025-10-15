@@ -1,4 +1,5 @@
 // src/app/products/[id]/page.tsx
+import type { PageProps } from 'next'
 import BreadCrumbs from '@/components/single-product/BreadCrumbs'
 import { fetchSingleProduct } from '@/utils/actions'
 import Image from 'next/image'
@@ -7,19 +8,19 @@ import FavoriteToggleButton from '@/components/products/FavoriteToggleButton'
 import AddToCart from '@/components/single-product/AddToCart'
 import ProductRating from '@/components/single-product/ProductRating'
 
-// Use a direct inline type for the props with Promise
-async function SingleProductPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  // Await the params Promise to get the actual values
-  const { id } = await params;
-  
+// If fetchSingleProduct touches Prisma, keep this on the Node runtime
+export const runtime = 'nodejs'
+
+export default async function SingleProductPage(
+  props: PageProps<'/products/[id]'>
+) {
+  // Next 15: params is a Promise — await it
+  const { id } = await props.params
+
   const product = await fetchSingleProduct(id)
   const { name, image, company, description, price } = product
   const dollarsAmount = formatCurrency(price)
-  
+
   return (
     <section>
       <BreadCrumbs name={product.name} />
@@ -53,5 +54,3 @@ async function SingleProductPage({
     </section>
   )
 }
-
-export default SingleProductPage
