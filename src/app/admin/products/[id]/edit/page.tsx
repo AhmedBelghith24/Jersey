@@ -12,16 +12,20 @@ import TextAreaInput from '@/components/form/TextAreaInput'
 import { SubmitButton } from '@/components/form/Buttons'
 import CheckboxInput from '@/components/form/CheckboxInput'
 import ImageInputContainer from '@/components/form/ImageInputContainer'
-import type { PageProps } from 'next'
 
-// Keep Node runtime if your data layer uses Prisma/Node APIs
+// If you use Prisma/Node APIs here, keep Node runtime
 export const runtime = 'nodejs'
 
-export default async function EditProductPage(
-  props: PageProps<'/admin/products/[id]/edit'>
-) {
-  // ✅ Next 15: params is a Promise — await it
-  const { id } = await props.params
+// ✅ Fix: params is a Promise in Next 15
+type EditProductPageProps = {
+  params: Promise<{
+    id: string
+  }>
+}
+
+export default async function EditProductPage({ params }: EditProductPageProps) {
+  // Await the params Promise to get the actual values
+  const { id } = await params
 
   const product = await fetchAdminProductDetails(id)
 
