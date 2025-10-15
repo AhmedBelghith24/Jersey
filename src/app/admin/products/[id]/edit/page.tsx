@@ -13,18 +13,15 @@ import { SubmitButton } from '@/components/form/Buttons'
 import CheckboxInput from '@/components/form/CheckboxInput'
 import ImageInputContainer from '@/components/form/ImageInputContainer'
 
-// If you use Prisma/Node APIs here, keep Node runtime
+// Keep Node runtime if your data layer uses Prisma/Node APIs
 export const runtime = 'nodejs'
 
-// ✅ Fix: params is a Promise in Next 15
+// ✅ Inline typing: params is a Promise
 type EditProductPageProps = {
-  params: Promise<{
-    id: string
-  }>
+  params: Promise<{ id: string }>
 }
 
 export default async function EditProductPage({ params }: EditProductPageProps) {
-  // Await the params Promise to get the actual values
   const { id } = await params
 
   const product = await fetchAdminProductDetails(id)
@@ -57,18 +54,8 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
         <FormContainer action={updateProductAction}>
           <div className="grid gap-4 md:grid-cols-2 my-4">
             <input type="hidden" name="id" value={id} />
-            <FormInput
-              type="text"
-              name="name"
-              label="product name"
-              defaultValue={name}
-            />
-            <FormInput
-              type="text"
-              name="company"
-              label="company"
-              defaultValue={company}
-            />
+            <FormInput type="text" name="name" label="product name" defaultValue={name} />
+            <FormInput type="text" name="company" label="company" defaultValue={company} />
             <PriceInput defaultValue={price} />
           </div>
 
@@ -79,11 +66,7 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
           />
 
           <div className="mt-6">
-            <CheckboxInput
-              name="featured"
-              label="featured"
-              defaultChecked={featured}
-            />
+            <CheckboxInput name="featured" label="featured" defaultChecked={featured} />
           </div>
 
           <SubmitButton text="update product" className="mt-8" />
