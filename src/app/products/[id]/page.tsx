@@ -7,7 +7,7 @@ import FavoriteToggleButton from '@/components/products/FavoriteToggleButton'
 import AddToCart from '@/components/single-product/AddToCart'
 import ProductRating from '@/components/single-product/ProductRating'
 
-// Keep Node runtime if your data layer uses Prisma/Node APIs
+// Keep Node runtime if you use Prisma/Node APIs
 export const runtime = 'nodejs'
 
 export default async function SingleProductPage({
@@ -15,7 +15,6 @@ export default async function SingleProductPage({
 }: {
   params: Promise<{ id: string }>
 }) {
-  // Next 15: params is a Promise — await it
   const { id } = await params
 
   const product = await fetchSingleProduct(id)
