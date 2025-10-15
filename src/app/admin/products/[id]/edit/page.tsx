@@ -18,7 +18,9 @@ type EditProductPageProps = {
   }
 }
 
-export default async function EditProductPage({ params }: EditProductPageProps) {
+export default async function EditProductPage({
+  params,
+}: EditProductPageProps) {
   const product = await fetchAdminProductDetails(params.id)
 
   if (!product) {
@@ -84,4 +86,3 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
     </section>
   )
 }
-
