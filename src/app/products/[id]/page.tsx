@@ -1,19 +1,24 @@
 // src/app/admin/products/[id]/edit/page.tsx
-import type { Metadata } from 'next'
+import type { Metadata, PageProps } from 'next'
 import Link from 'next/link'
 import { fetchSingleProduct } from '@/utils/actions'
 import { formatCurrency } from '@/utils/format'
 
-// If your data layer uses Prisma/Node APIs, keep this on the Node runtime
+// Keep Node runtime if your data layer uses Prisma/Node APIs
 export const runtime = 'nodejs'
 
-export default async function EditProductPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  // Next 15: params is a Promise — await it
-  const { id } = await params
+export async function generateMetadata(
+  props: PageProps<'/admin/products/[id]/edit'>
+): Promise<Metadata> {
+  const { id } = await props.params
+  return { title: `Edit Product ${id}` }
+}
+
+export default async function EditProductPage(
+  props: PageProps<'/admin/products/[id]/edit'>
+) {
+  // ✅ Next 15: params is a Promise — await it
+  const { id } = await props.params
 
   const product = await fetchSingleProduct(id)
   const {
@@ -38,7 +43,7 @@ export default async function EditProductPage({
         </span>
       </header>
 
-      {/* Replace this form with your own admin form or server action hookup */}
+      {/* Replace with your own admin form / server action if you have one */}
       <form className="grid gap-4 max-w-2xl">
         <div className="grid gap-2">
           <label htmlFor="name" className="text-sm font-medium">
@@ -123,13 +128,4 @@ export default async function EditProductPage({
       </form>
     </section>
   )
-}
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}): Promise<Metadata> {
-  const { id } = await params
-  return { title: `Edit Product ${id}` }
 }
