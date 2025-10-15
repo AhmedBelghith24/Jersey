@@ -1,56 +1,135 @@
-// src/app/products/[id]/page.tsx
-import type { PageProps } from 'next'
-import BreadCrumbs from '@/components/single-product/BreadCrumbs'
+// src/app/admin/products/[id]/edit/page.tsx
+import type { Metadata } from 'next'
+import Link from 'next/link'
 import { fetchSingleProduct } from '@/utils/actions'
-import Image from 'next/image'
 import { formatCurrency } from '@/utils/format'
-import FavoriteToggleButton from '@/components/products/FavoriteToggleButton'
-import AddToCart from '@/components/single-product/AddToCart'
-import ProductRating from '@/components/single-product/ProductRating'
 
-// If fetchSingleProduct touches Prisma, keep this on the Node runtime
+// If your data layer uses Prisma/Node APIs, keep this on the Node runtime
 export const runtime = 'nodejs'
 
-export default async function SingleProductPage(
-  props: PageProps<'/products/[id]'>
-) {
+export default async function EditProductPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   // Next 15: params is a Promise — await it
-  const { id } = await props.params
+  const { id } = await params
 
   const product = await fetchSingleProduct(id)
-  const { name, image, company, description, price } = product
+  const {
+    name = '',
+    company = '',
+    description = '',
+    price = 0,
+    image = '',
+  } = product ?? {}
+
   const dollarsAmount = formatCurrency(price)
 
   return (
-    <section>
-      <BreadCrumbs name={product.name} />
-      <div className="mt-6 grid gap-y-8 lg:grid-cols-2 lg:gap-x-16">
-        {/* IMAGE FIRST COL */}
-        <div className="relative h-full">
-          <Image
-            src={image}
-            alt={name}
-            fill
-            sizes="(max-width:768px) 100vw,(max-width:1200px) 50vw,33vw"
-            priority
-            className="w-full rounded-md object-cover"
+    <section className="space-y-6">
+      <header className="flex items-end justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Edit Product</h1>
+          <p className="text-muted-foreground">ID: {id}</p>
+        </div>
+        <span className="text-sm bg-muted px-3 py-1 rounded">
+          Current price: {dollarsAmount}
+        </span>
+      </header>
+
+      {/* Replace this form with your own admin form or server action hookup */}
+      <form className="grid gap-4 max-w-2xl">
+        <div className="grid gap-2">
+          <label htmlFor="name" className="text-sm font-medium">
+            Name
+          </label>
+          <input
+            id="name"
+            name="name"
+            defaultValue={name}
+            className="border rounded-md px-3 py-2"
           />
         </div>
-        {/* PRODUCT INFO SECOND COL */}
-        <div>
-          <div className="flex gap-x-8 items-center">
-            <h1 className="capitalize text-3xl font-bold">{name}</h1>
-            <FavoriteToggleButton productId={id} />
-          </div>
-          <ProductRating productId={id} />
-          <h4 className="text-xl mt-2">{company}</h4>
-          <p className="mt-3 text-md bg-muted inline-block p-2 rounded-md">
-            {dollarsAmount}
-          </p>
-          <p className="mt-6 leading-8 text-muted-foreground">{description}</p>
-          <AddToCart />
+
+        <div className="grid gap-2">
+          <label htmlFor="company" className="text-sm font-medium">
+            Company
+          </label>
+          <input
+            id="company"
+            name="company"
+            defaultValue={company}
+            className="border rounded-md px-3 py-2"
+          />
         </div>
-      </div>
+
+        <div className="grid gap-2">
+          <label htmlFor="price" className="text-sm font-medium">
+            Price (cents)
+          </label>
+          <input
+            id="price"
+            name="price"
+            type="number"
+            inputMode="numeric"
+            defaultValue={price}
+            className="border rounded-md px-3 py-2"
+          />
+          <p className="text-xs text-muted-foreground">
+            Stored as an integer (e.g. $12.34 → 1234)
+          </p>
+        </div>
+
+        <div className="grid gap-2">
+          <label htmlFor="image" className="text-sm font-medium">
+            Image URL
+          </label>
+          <input
+            id="image"
+            name="image"
+            defaultValue={image}
+            className="border rounded-md px-3 py-2"
+          />
+        </div>
+
+        <div className="grid gap-2">
+          <label htmlFor="description" className="text-sm font-medium">
+            Description
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            rows={5}
+            defaultValue={description}
+            className="border rounded-md px-3 py-2"
+          />
+        </div>
+
+        {/* Hidden field for ID if your action expects it */}
+        <input type="hidden" name="id" value={id} />
+
+        <div className="flex gap-3">
+          <button
+            type="submit"
+            className="rounded-md px-4 py-2 bg-black text-white"
+          >
+            Save changes
+          </button>
+          <Link href={`/products/${id}`} className="rounded-md px-4 py-2 border">
+            View product
+          </Link>
+        </div>
+      </form>
     </section>
   )
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}): Promise<Metadata> {
+  const { id } = await params
+  return { title: `Edit Product ${id}` }
 }
